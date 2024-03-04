@@ -19,6 +19,7 @@ const unsigned int SCR_HEIGHT = 600;
     // 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    //"layout (location = 1) in vec3 aColor;\n"
 
     "out vec4 vertexColor;\n" // specify a color output to the fragment shader
 

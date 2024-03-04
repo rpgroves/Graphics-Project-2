@@ -8,6 +8,11 @@ DONE:
 
 TODO:
 
+- [ ] Read vertex geometry and connectivity from .obj files to generate a "separate triangles" data structure in the `verticies` array.
+    - [ ] Try on a simple file first
+        - [ ] Modify data/cube.obj to have triangular faces rather than quad faces
+            - [ ] Learn how wavefronts work :( https://en.wikipedia.org/wiki/Wavefront_.obj_file
+
 - [ ] Allow VBOs and VAOs to asssign a color to each vertex.
     - [ ] Modify the vertex/fragment shaders to render based on said color.
 
