@@ -1,13 +1,14 @@
 # Variables
 CXX = g++
-CXXFLAGS = -Wall -std=c++11
+CXXFLAGS = -Wall -std=c++11 -g
 LIBS = -lglfw -lGLEW -lGL
+SRCDIR = src
+INCLUDES = -I$(SRCDIR) -Iglm
 
-# Make sure you add new cpp files here :D
-SRC = helloTriangle.cpp
+SRC = $(wildcard $(SRCDIR)/*.cpp)
 
-OBJ = $(addprefix build/, $(SRC:.cpp=.o))
-EXEC = build/rayTracingAssignment2
+OBJ = $(addprefix build/, $(notdir $(SRC:.cpp=.o)))
+EXEC = build/modelViewer.exe
 
 # Default target
 all: $(EXEC)
@@ -21,9 +22,9 @@ $(EXEC): $(OBJ)
 	$(CXX) $^ -o $@ $(LIBS)
 
 # Compiling
-build/%.o: %.cpp | build
-	$(CXX) -c $< -o $@ $(CXXFLAGS)
+build/%.o: $(SRCDIR)/%.cpp | build
+	$(CXX) $(INCLUDES) -c $< -o $@ $(CXXFLAGS)
 
 # Cleaning up
 clean:
-	rm -rf build
+	rm -rf build	

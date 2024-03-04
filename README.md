@@ -3,6 +3,9 @@ Resources:
 https://learnopengl.com/Getting-started/Shaders
 
 
+DONE:
+- [x] Added a vertexColor in/out variable to the frag/vert shader.
+
 TODO:
 
 - [ ] Allow VBOs and VAOs to asssign a color to each vertex.

@@ -12,18 +12,33 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// TODO: Modify this shader to associate a color for each vertex, and pass that color to the fragment shader.
+// Learn in/out, data types, and how to pass data between shaders.
+
+// THEN: We should write these in seperate files sooner rather than later.
+    // 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+
+    "out vec4 vertexColor;\n" // specify a color output to the fragment shader
+
     "void main()\n"
     "{\n"
+
+    "vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n" // set the output variable to a dark-red color
+
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
+
+    "in vec4 vertexColor;\n" // the input variable from the vertex shader (same name and same type) 
+    
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vertexColor;\n"
     "}\n\0";
+
 
 int main()
 {
