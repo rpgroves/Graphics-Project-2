@@ -1,4 +1,8 @@
 
+Resources:
+https://learnopengl.com/Getting-started/Shaders
+
+
 TODO:
 
 - [ ] Allow VBOs and VAOs to asssign a color to each vertex.
