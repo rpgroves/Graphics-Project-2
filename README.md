@@ -4,7 +4,8 @@ https://learnopengl.com/Getting-started/Shaders
 
 
 DONE:
-- [x] Added a vertexColor in/out variable to the frag/vert shader.
+- Added a vertexColor in/out variable to the frag/vert shader.
+- Copied shader_s.h from learnOpenGL, Andrew K said their version is **far too much**, we can make our own stripped down version that doesn't implement <glad.h> or whatever
 
 TODO:
 
