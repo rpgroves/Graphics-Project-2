@@ -1,10 +1,13 @@
 
 // Header-only class for a shader file. Taken from https://learnopengl.com/Getting-started/Shaders
 // I think we should redo this on our own, this has a lot of features (glad???) that we don't necessarily need.
+#pragma once
 #ifndef SHADER_H
 #define SHADER_H
 
-// #include <glad/glad.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+//#include <glad/glad.h>
 
 #include <string>
 #include <fstream>
