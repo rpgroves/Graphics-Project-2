@@ -17,7 +17,7 @@ TODO:
 - [ ] Allow VBOs and VAOs to asssign a color to each vertex.
     - [ ] Modify the vertex/fragment shaders to render based on said color.
 
-- [ ] Read in shader code from a separate file rather than a hardcoded const string.
+- [x] Read in shader code from a separate file rather than a hardcoded const string.
 
 - [ ] Construct a *Model Viewmatrix* for placing an object in a scene.
     - [ ] GLM provides certain matricies to use for composition...
