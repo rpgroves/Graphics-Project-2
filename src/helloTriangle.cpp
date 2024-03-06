@@ -5,6 +5,11 @@
 #include "shader_s.h"
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -42,19 +47,62 @@ int main()
     glewInit();
 
     // Loading shaders from file.
-    Shader loadedShader("src/shaders/basicVertex.vs", "src/shaders/basicFragment.fs");
+    Shader loadedShader("src/shaders/colorVertex.vs", "src/shaders/basicFragment.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices[] = {
-        -0.5f, -.25f, 0.0f, // left  
-         0.5f, -.75f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f, // top   
 
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f, -1.0f, 0.0f  // bottom
-    };
-    unsigned int numVertices = sizeof(vertices)/3;
+
+//This section added / changed by Riley :3 essentially you just need to change the loadedFile to change what vertices are loaded in
+//This section currently ignored all obj file lines except those with vertices
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+    string loadedFile = "cube.obj";
+    string filePath = "data/" + loadedFile;
+
+    ifstream myfile;
+    myfile.open (filePath);
+
+    vector<float> objData;
+
+    bool colorSwap = true;
+    for(string line; getline(myfile, line);)
+    {
+        string lineTemp = line;
+        if(line != "" && line.at(0) == 'v' && line.at(1) == ' ')
+        {
+            lineTemp = lineTemp.substr(2);
+            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
+            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
+            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
+            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
+            objData.push_back(stof(lineTemp.substr(0)));
+
+            float color = 0.5;
+            if(colorSwap)
+                color = 1.0f;
+            colorSwap = !colorSwap;
+            objData.push_back(color);
+            objData.push_back(0.0f);
+            objData.push_back(color);
+        }
+    }
+        
+    float vertices[objData.size()];
+    for(long unsigned int i = 0; i < objData.size(); i++)
+    {
+        vertices[i] = objData.at(i);
+    }
+    unsigned int numVertices = sizeof(vertices)/6;
+
+    //To see the colorful triangle, uncomment what is below and comment what is above (up to the bar ///)
+
+    // float vertices[] = {
+    //     0.5f, -0.5f, 0.0f,      1.0f, 0.0f, 0.0f,
+    //     -0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,
+    //     0.0f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f
+    // };
+    // unsigned int numVertices = sizeof(vertices)/6;
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -65,8 +113,18 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    //Vertex Attribute Pointers:
+    //When you add a new field, increment parameter 4 (the size of) in every line that has the pointer, ie when
+    //color got added it went from 3 to 6 because of 3 new floats. Also for each new attribute pointer line increment the
+    //first parameter based on which attirbute number you are working with (color comes second so its index 1), also do this for the enablevertexattribarray line
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
