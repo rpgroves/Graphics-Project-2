@@ -121,21 +121,23 @@ int main()
             }
         }
     }
+    cout << objData.size() << endl;
         
     //set the size of the float array to be the amount of vertices to add times the amount of vertex attributes needed for each
-    float vertices[vertexOrder.size() * vertexAttributeCount];
+    float vertices[vertexOrder.size() * vertexAttributeCount ];
     //the current index in the array
     int verticesIndex = 0;
     for(long unsigned int i = 0; i < vertexOrder.size(); i++)
     {
         //finds the index of the vertex we currently need to add
         //using the vertex order
-        int vertexToAdd = vertexOrder.at(i) - 1;
+        int vertexToAdd = vertexOrder.at(i);
+        cout << vertexToAdd << ": " << vertexToAdd * vertexAttributeCount << endl;
 
         //goes through each attribute of a vertex being added, adding those attributed to the array
         for(int j = 0; j < vertexAttributeCount; j++)
         {
-            vertices[verticesIndex] = objData.at(vertexToAdd * vertexAttributeCount + j);
+            vertices[verticesIndex] = objData.at((vertexToAdd - 1) * vertexAttributeCount + j);
             cout << vertices[verticesIndex] << " ";
             verticesIndex++;
         }
