@@ -71,6 +71,7 @@ int main()
     //ie. if face 1 has vertices 1 4 and 5, then vertexOrder.at 1 2 and 3 would be 1 4 and 5.
     vector<int> vertexOrder;
 
+    bool colorSwap = false;
     //loop through each line of the read obj file
     for(string line; getline(myfile, line);)
     {
@@ -94,7 +95,8 @@ int main()
                 color = 1.0f;
             colorSwap = !colorSwap;
             objData.push_back(color);
-            objData.push_back(color);
+            objData.push_back(0.0f);
+            objData.push_back(1.0f);
         }
         //if the current line represnts a face
         if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
@@ -122,10 +124,10 @@ int main()
             }
         }
     }
-    cout << objData.size() << endl;
+    //cout << objData.size() << endl;
         
     //set the size of the float array to be the amount of vertices to add times the amount of vertex attributes needed for each
-    float vertices[vertexOrder.size() * vertexAttributeCount ];
+    float vertices[vertexOrder.size() * vertexAttributeCount];
     //the current index in the array
     int verticesIndex = 0;
     for(long unsigned int i = 0; i < vertexOrder.size(); i++)
@@ -139,10 +141,10 @@ int main()
         for(int j = 0; j < vertexAttributeCount; j++)
         {
             vertices[verticesIndex] = objData.at((vertexToAdd - 1) * vertexAttributeCount + j);
-            cout << vertices[verticesIndex] << " ";
+            //cout << vertices[verticesIndex] << " ";
             verticesIndex++;
         }
-        cout << endl;
+        //cout << endl;
     }
     unsigned int numVertices = vertexOrder.size();
 
