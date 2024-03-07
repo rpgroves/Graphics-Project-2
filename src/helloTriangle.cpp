@@ -70,10 +70,10 @@ int main()
     vector<float> objData;
     vector<int> vertexOrder;
 
-    bool colorSwap = true;
     for(string line; getline(myfile, line);)
     {
         string lineTemp = line;
+        // Read in each vertex position and color, appends  x, y, z,  r, g, b.
         if(line != "" && line.at(0) == 'v' && line.at(1) == ' ')
         {
             lineTemp = lineTemp.substr(2);
@@ -83,13 +83,10 @@ int main()
             lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
             objData.push_back(stof(lineTemp.substr(0)));
 
-
-            float color = 0.5;
-            if(colorSwap)
-                color = 1.0f;
-            colorSwap = !colorSwap;
+            // assign a little gray color to everything        
+            float color = 0.8f;
             objData.push_back(color);
-            objData.push_back(0.0f);
+            objData.push_back(color);
             objData.push_back(color);
         }
         if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')

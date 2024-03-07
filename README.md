@@ -32,4 +32,4 @@ TODO:
 
 - [ ] REPORT
     - [ ] Documents each implemented functionality
-    - [ ] Compares performance of each approach on large meshes.
+    - [ ] Compares performance of each approach on large meshes.D
