@@ -9,7 +9,8 @@
 // -> View space    - Defined by camera properties. 0,0,0 is the camera position.
 // -> Clip space    - This is what we want to have in our VBO's. Except maybe some W division beforehand?? idk
 //  
-// -> Screen space - This is done at render time i think
+// GPU does then takes care of:
+// -> Normalized device coordinates -> Screen space
 
 glm::mat4 model         = glm::mat4(1.0f); // local space           -> world space
 glm::mat4 view          = glm::mat4(1.0f); // model (world) space   -> view space 

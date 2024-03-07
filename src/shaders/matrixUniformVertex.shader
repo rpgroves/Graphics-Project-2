@@ -2,10 +2,13 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 out vec3 vertexColor; // specify a color output to the fragment shader
 
 void main() {
-    vertexColor = vec3(0.5, 0.0, 0.0); // set the output variable to a dark-red color
-
+    vertexColor = aColor; // set the output variable to input color
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

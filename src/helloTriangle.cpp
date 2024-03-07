@@ -47,7 +47,7 @@ int main()
     glewInit();
 
     // Loading shaders from file.
-    Shader loadedShader("src/shaders/colorVertex.vs", "src/shaders/basicFragment.fs");
+    Shader loadedShader("src/shaders/matrixUniformVertex.shader", "src/shaders/basicFragment.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
@@ -79,6 +79,7 @@ int main()
             objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
             lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
             objData.push_back(stof(lineTemp.substr(0)));
+
 
             float color = 0.5;
             if(colorSwap)
@@ -186,7 +187,9 @@ int main()
         //glUseProgram(shaderProgram); replacing this with custom shader renderer
         loadedShader.use();
         // set uniforms here!
-        // loadedShader.setFloat("xOffset", 0.5f);
+        loadedShader.setMat4("model", glm::mat4(1.0f));
+        loadedShader.setMat4("view", glm::mat4(1.0f));
+        loadedShader.setMat4("projection", glm::mat4(1.0f));
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
         // glBindVertexArray(0); // unbind our VA no need to unbind it every time 
