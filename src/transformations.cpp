@@ -1,6 +1,16 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp> // ?
 
+
+// each object needs to undergo the following transformation pipeline
+// Local space,     - Defined in the obj file itself. 0,0,0 is the object origin
+// -> World space   - Defined by the position of the object in the world. 0,0,0 is the world origin 
+//                           (need a position uniform? or something?)
+// -> View space    - Defined by camera properties. 0,0,0 is the camera position.
+// -> Clip space    - This is what we want to have in our VBO's. Except maybe some W division beforehand?? idk
+//  
+// -> Screen space - This is done at render time i think
+
 glm::mat4 model         = glm::mat4(1.0f); // local space           -> world space
 glm::mat4 view          = glm::mat4(1.0f); // model (world) space   -> view space 
 glm::mat4 projection    = glm::mat4(1.0f); // view space            -> clip space
