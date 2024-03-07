@@ -51,28 +51,34 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
-
-//This section added / changed by Riley :3 essentially you just need to change the loadedFile to change what vertices are loaded in
-//This section currently ignored all obj file lines except those with vertices
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //refers to the amount of attributes in a vertex, in the current case we have x y z r g and b, so 6.
     int vertexAttributeCount = 6;
 
+    //name of file we want to read from for the object
     string loadedFile = "cube.obj";
     string filePath = "data/" + loadedFile;
 
     ifstream myfile;
     myfile.open (filePath);
 
+    //represents the data read from an obj file in the order of x, y, z, r, g, b
     vector<float> objData;
+    //represents the order of each vertex as they should be added to the list, this keeps faces together. 
+    //ie. if face 1 has vertices 1 4 and 5, then vertexOrder.at 1 2 and 3 would be 1 4 and 5.
     vector<int> vertexOrder;
 
     bool colorSwap = true;
+    //loop through each line of the read obj file
     for(string line; getline(myfile, line);)
     {
+        //current line (gets broken into smaller pieces over time)
         string lineTemp = line;
+        //if the current line represents a vertex
         if(line != "" && line.at(0) == 'v' && line.at(1) == ' ')
         {
+            //get the 3 position values, pushing them to objData
             lineTemp = lineTemp.substr(2);
             objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
             lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
@@ -80,6 +86,7 @@ int main()
             lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
             objData.push_back(stof(lineTemp.substr(0)));
 
+            //push 3 arbitrary color values to objData
             float color = 0.5;
             if(colorSwap)
                 color = 1.0f;
@@ -88,34 +95,44 @@ int main()
             objData.push_back(0.0f);
             objData.push_back(color);
         }
+        //if the current line represnts a face
         if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
         {
             lineTemp = lineTemp.substr(2);
             string numTemp = "";
+            //loop through entire line, finding either numbers, spaces, or '/'
             for(long unsigned int i = 0; i < lineTemp.size(); i++)
             {
+                //if a '/' we know a number just ended and we can add it
                 if(lineTemp.at(i) == '/')
                 {
                     vertexOrder.push_back(stoi(numTemp));
                     numTemp = "";
                     i++;
                 }
+                //if a number, add it to the temporary string
                 else if(lineTemp.at(i) != ' ')
                 {
                     numTemp += lineTemp.at(i);
                 }
+                //if a space, a second copy of the last number was added so we can just clear the string
                 else
                     numTemp = "";
             }
         }
     }
         
+    //set the size of the float array to be the amount of vertices to add times the amount of vertex attributes needed for each
     float vertices[vertexOrder.size() * vertexAttributeCount];
+    //the current index in the array
     int verticesIndex = 0;
     for(long unsigned int i = 0; i < vertexOrder.size(); i++)
     {
+        //finds the index of the vertex we currently need to add
+        //using the vertex order
         int vertexToAdd = vertexOrder.at(i) - 1;
 
+        //goes through each attribute of a vertex being added, adding those attributed to the array
         for(int j = 0; j < vertexAttributeCount; j++)
         {
             vertices[verticesIndex] = objData.at(vertexToAdd * vertexAttributeCount + j);
