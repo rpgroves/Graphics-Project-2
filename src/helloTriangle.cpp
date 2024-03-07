@@ -2,12 +2,15 @@
 #include <GL/glew.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "shader_s.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <glm/ext.hpp>
+
 
 using namespace std;
 
@@ -47,13 +50,12 @@ int main()
     glewInit();
 
     // Loading shaders from file.
-    Shader loadedShader("src/shaders/colorVertex.vs", "src/shaders/basicFragment.fs");
+    Shader loadedShader("src/shaders/matrixUniformVertex.shader", "src/shaders/basicFragment.fs");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //refers to the amount of attributes in a vertex, in the current case we have x y z r g and b, so 6.
     int vertexAttributeCount = 6;
 
     //name of file we want to read from for the object
@@ -69,13 +71,13 @@ int main()
     //ie. if face 1 has vertices 1 4 and 5, then vertexOrder.at 1 2 and 3 would be 1 4 and 5.
     vector<int> vertexOrder;
 
-    bool colorSwap = true;
     //loop through each line of the read obj file
     for(string line; getline(myfile, line);)
     {
         //current line (gets broken into smaller pieces over time)
         string lineTemp = line;
         //if the current line represents a vertex
+        // Read in each vertex position and color, appends  x, y, z,  r, g, b.
         if(line != "" && line.at(0) == 'v' && line.at(1) == ' ')
         {
             //get the 3 position values, pushing them to objData
@@ -92,7 +94,6 @@ int main()
                 color = 1.0f;
             colorSwap = !colorSwap;
             objData.push_back(color);
-            objData.push_back(0.0f);
             objData.push_back(color);
         }
         //if the current line represnts a face
@@ -205,7 +206,18 @@ int main()
         //glUseProgram(shaderProgram); replacing this with custom shader renderer
         loadedShader.use();
         // set uniforms here!
-        // loadedShader.setFloat("xOffset", 0.5f);
+        glm::mat4 model         = glm::mat4(1.0f);
+        glm::mat4 view          = glm::mat4(1.0f);
+        glm::mat4 projection    = glm::mat4(1.0f);
+
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -30.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        
+        loadedShader.setMat4("model", model);
+        loadedShader.setMat4("view", view);
+        loadedShader.setMat4("projection", projection);
+        
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
         // glBindVertexArray(0); // unbind our VA no need to unbind it every time 
