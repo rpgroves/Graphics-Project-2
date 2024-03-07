@@ -59,7 +59,7 @@ int main()
 //This section currently ignored all obj file lines except those with vertices
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int vertexAttributeCount = 6;
+    int vertexAttributeCount = 6; // x, y, z, r, g, b ?
 
     string loadedFile = "cube.obj";
     string filePath = "data/" + loadedFile;
@@ -84,7 +84,7 @@ int main()
             objData.push_back(stof(lineTemp.substr(0)));
 
             // assign a little gray color to everything        
-            float color = 0.8f;
+            float color = 0.9f;
             objData.push_back(color);
             objData.push_back(color);
             objData.push_back(color);
@@ -191,7 +191,7 @@ int main()
         glm::mat4 view          = glm::mat4(1.0f);
         glm::mat4 projection    = glm::mat4(1.0f);
 
-        //model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -30.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
