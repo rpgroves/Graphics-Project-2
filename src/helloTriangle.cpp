@@ -56,6 +56,8 @@ int main()
 //This section currently ignored all obj file lines except those with vertices
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+    int vertexAttributeCount = 6;
+
     string loadedFile = "cube.obj";
     string filePath = "data/" + loadedFile;
 
@@ -63,6 +65,7 @@ int main()
     myfile.open (filePath);
 
     vector<float> objData;
+    vector<int> vertexOrder;
 
     bool colorSwap = true;
     for(string line; getline(myfile, line);)
@@ -85,14 +88,43 @@ int main()
             objData.push_back(0.0f);
             objData.push_back(color);
         }
+        if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
+        {
+            lineTemp = lineTemp.substr(2);
+            string numTemp = "";
+            for(long unsigned int i = 0; i < lineTemp.size(); i++)
+            {
+                if(lineTemp.at(i) == '/')
+                {
+                    vertexOrder.push_back(stoi(numTemp));
+                    numTemp = "";
+                    i++;
+                }
+                else if(lineTemp.at(i) != ' ')
+                {
+                    numTemp += lineTemp.at(i);
+                }
+                else
+                    numTemp = "";
+            }
+        }
     }
         
-    float vertices[objData.size()];
-    for(long unsigned int i = 0; i < objData.size(); i++)
+    float vertices[vertexOrder.size() * vertexAttributeCount];
+    int verticesIndex = 0;
+    for(long unsigned int i = 0; i < vertexOrder.size(); i++)
     {
-        vertices[i] = objData.at(i);
+        int vertexToAdd = vertexOrder.at(i) - 1;
+
+        for(int j = 0; j < vertexAttributeCount; j++)
+        {
+            vertices[verticesIndex] = objData.at(vertexToAdd * vertexAttributeCount + j);
+            cout << vertices[verticesIndex] << " ";
+            verticesIndex++;
+        }
+        cout << endl;
     }
-    unsigned int numVertices = sizeof(vertices)/6;
+    unsigned int numVertices = vertexOrder.size();
 
     //To see the colorful triangle, uncomment what is below and comment what is above (up to the bar ///)
 
@@ -101,7 +133,7 @@ int main()
     //     -0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,
     //     0.0f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f
     // };
-    // unsigned int numVertices = sizeof(vertices)/6;
+    // unsigned int numVertices = sizeof(vertices)/vertexAttributeCount;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     unsigned int VBO, VAO;
@@ -120,10 +152,10 @@ int main()
     //first parameter based on which attirbute number you are working with (color comes second so its index 1), also do this for the enablevertexattribarray line
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexAttributeCount * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexAttributeCount * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
