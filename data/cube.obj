@@ -1,6 +1,6 @@
 ##
 ##  Three-D Library generated .obj file
-##  cube
+##  cube, **but with triangles!!**
 ##
 
 mtllib cube.mtl
@@ -31,23 +31,14 @@ vn -0.577350 0.577350 0.577350
 # 0 texture vertices
 
 g default
-f 4//4 2//2 1//1 
-f 4//4 3//3 2//2
 
-f 1//1 6//6 5//5 
-f 1//1 2//2 6//6
-
-f 7//7 2//2 3//3 
-f 7//7 6//6 2//2
-
-f 4//4 7//7 3//3 
-f 4//4 8//8 7//7
-
-f 5//5 4//4 1//1  
-f 5//5 8//8 4//4
-
-f 5//5 7//7 8//8
-f 5//5 6//6 7//7
-
+## Faces are a list of face elements, each element is in the format vertex_index/texture_index/normal_index
+## TODO: split up each face in to two triangular faces.
+f 4//4 3//3 2//2 1//1 
+f 1//1 2//2 6//6 5//5 
+f 7//7 6//6 2//2 3//3 
+f 4//4 8//8 7//7 3//3 
+f 5//5 8//8 4//4 1//1  
+f 5//5 6//6 7//7 8//8
 # 6 faces
 

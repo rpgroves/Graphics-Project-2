@@ -21,6 +21,10 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+int vertexAtributeCount = 6; // 3 for position, 3 for color
+
+vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount);
+
 int main()
 {
     // glfw: initialize and configure
@@ -56,107 +60,9 @@ int main()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int vertexAttributeCount = 6;
-
-    //name of file we want to read from for the object
-    string loadedFile = "cube.obj";
-    string filePath = "data/" + loadedFile;
-
-    ifstream myfile;
-    myfile.open (filePath);
-
-    //represents the data read from an obj file in the order of x, y, z, r, g, b
-    vector<float> objData;
-    //represents the order of each vertex as they should be added to the list, this keeps faces together. 
-    //ie. if face 1 has vertices 1 4 and 5, then vertexOrder.at 1 2 and 3 would be 1 4 and 5.
-    vector<int> vertexOrder;
-
-    bool colorSwap = false;
-    //loop through each line of the read obj file
-    for(string line; getline(myfile, line);)
-    {
-        //current line (gets broken into smaller pieces over time)
-        string lineTemp = line;
-        //if the current line represents a vertex
-        // Read in each vertex position and color, appends  x, y, z,  r, g, b.
-        if(line != "" && line.at(0) == 'v' && line.at(1) == ' ')
-        {
-            //get the 3 position values, pushing them to objData
-            lineTemp = lineTemp.substr(2);
-            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
-            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
-            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
-            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
-            objData.push_back(stof(lineTemp.substr(0)));
-
-            //push 3 arbitrary color values to objData
-            float color = 0.5;
-            if(colorSwap)
-                color = 1.0f;
-            colorSwap = !colorSwap;
-            objData.push_back(color);
-            objData.push_back(0.0f);
-            objData.push_back(1.0f);
-        }
-        //if the current line represnts a face
-        if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
-        {
-            lineTemp = lineTemp.substr(2);
-            string numTemp = "";
-            //loop through entire line, finding either numbers, spaces, or '/'
-            for(long unsigned int i = 0; i < lineTemp.size(); i++)
-            {
-                //if a '/' we know a number just ended and we can add it
-                if(lineTemp.at(i) == '/')
-                {
-                    vertexOrder.push_back(stoi(numTemp));
-                    numTemp = "";
-                    i++;
-                }
-                //if a number, add it to the temporary string
-                else if(lineTemp.at(i) != ' ')
-                {
-                    numTemp += lineTemp.at(i);
-                }
-                //if a space, a second copy of the last number was added so we can just clear the string
-                else
-                    numTemp = "";
-            }
-        }
-    }
-    //cout << objData.size() << endl;
-        
-    //set the size of the float array to be the amount of vertices to add times the amount of vertex attributes needed for each
-    float vertices[vertexOrder.size() * vertexAttributeCount];
-    //the current index in the array
-    int verticesIndex = 0;
-    for(long unsigned int i = 0; i < vertexOrder.size(); i++)
-    {
-        //finds the index of the vertex we currently need to add
-        //using the vertex order
-        int vertexToAdd = vertexOrder.at(i);
-        cout << vertexToAdd << ": " << vertexToAdd * vertexAttributeCount << endl;
-
-        //goes through each attribute of a vertex being added, adding those attributed to the array
-        for(int j = 0; j < vertexAttributeCount; j++)
-        {
-            vertices[verticesIndex] = objData.at((vertexToAdd - 1) * vertexAttributeCount + j);
-            //cout << vertices[verticesIndex] << " ";
-            verticesIndex++;
-        }
-        //cout << endl;
-    }
-    unsigned int numVertices = vertexOrder.size();
-
-    //To see the colorful triangle, uncomment what is below and comment what is above (up to the bar ///)
-
-    // float vertices[] = {
-    //     0.5f, -0.5f, 0.0f,      1.0f, 0.0f, 0.0f,
-    //     -0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,
-    //     0.0f, 0.5f, 0.0f,       0.0f, 0.0f, 1.0f
-    // };
-    // unsigned int numVertices = sizeof(vertices)/vertexAttributeCount;
-///////////////////////////////////////////////////////////////////////////////////////////////////
+    int vertexAttributeCount = 6; // x, y, z, r, g, b
+    unsigned int numVertices = 0;
+    float* vertices = loadVerticesFromFile("src/vertices.txt", vertexAttributeCount);
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -257,4 +163,65 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount) {
+    std::ifstream file("filePath");
+
+    vector<float> objData;
+    vector<int> vertexOrder;
+
+    for (std::string line; getline(file, line);) {
+        // Current line (gets broken into smaller pieces over time)
+        std::string lineTemp = line;
+        // If the current line represents a vertex, read in each vertex position and color, 
+        //      appends x, y, z, r, g, b.
+        if (line != "" && line.at(0) == 'v' && line.at(1) == ' ') {
+            
+            // Read in verticies
+            lineTemp = lineTemp.substr(2);
+            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
+            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
+            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
+            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
+            objData.push_back(stof(lineTemp.substr(0)));
+
+            // Determine color
+            float color = 0.5f;
+            objData.push_back(color);
+            objData.push_back(color);
+            objData.push_back(color);
+        }
+        // This is wacky
+        if (line != "" && line.at(0) == 'f' && line.at(1) == ' ') {
+            lineTemp = lineTemp.substr(2);
+            std::string numTemp = "";
+            for (long unsigned int i = 0; i < lineTemp.size(); i++) {
+                if (lineTemp.at(i) == '/') {
+                    vertexOrder.push_back(stoi(numTemp));
+                    numTemp = "";
+                    i++;
+                }
+                else if (lineTemp.at(i) != ' ') {
+                    numTemp += lineTemp.at(i);
+                }
+                else {
+                    numTemp = "";
+                }
+            }
+        }
+    }
+    // Loop through vertexOrder and add the verticies to the array
+    vector<float> vertices;
+    vertices.size = (vertexOrder.size() * vertexAtributeCount);
+
+    int verticesIndex = 0;
+    for (long unsigned int i = 0; i < vertexOrder.size(); i++) {
+        int vertexToAdd = vertexOrder.at(i);
+        for (int j = 0; j < vertexAtributeCount; j++) {
+            vertices[verticesIndex] = objData.at((vertexToAdd - 1) * vertexAtributeCount + j);
+            verticesIndex++;
+        }
+    }
+    return vertices;
 }
