@@ -1,14 +1,12 @@
 
 // Header-only class for a shader file. Taken from https://learnopengl.com/Getting-started/Shaders
-// Don't know if we should redo this on our own, this has a lot of features (glad???) that we don't necessarily need.
+// This class is used to load and compile shaders from a file, and then use them in the rendering process.
 #pragma once
-#ifndef SHADER_H
-#define SHADER_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h> // these includes instead
 #include <glm/glm.hpp>
-//#include <glad/glad.h>
+
 
 #include <string>
 #include <fstream>
@@ -79,8 +77,10 @@ public:
     // ------------------------------------------------------------------------
     void use() 
     { 
-        glUseProgram(ID); 
+        glUseProgram(ID); // TODO: When the hell is this supposed to be called? Once per object?? Per frame?
     }
+
+
     // utility uniform functions
     // ------------------------------------------------------------------------
     void setBool(const std::string &name, bool value) const
@@ -130,5 +130,4 @@ private:
         }
     }
 };
-#endif
 
