@@ -68,18 +68,23 @@ int main()
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
 
+    // 1. Copy vertices array into a buffer for OpenGL to use
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // 2. Then set the vertex attributes pointers
+    // This line is the most important line in this program. It tells OpenGL how to interpret the vertex data.
+    // I think the first parameter is the index of the vertex attribute, which for us is verteces. (0) 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // index, size, type, normalized, stride, pointer TODO: IDK WHAT THIS DOES??
     glEnableVertexAttribArray(0);
 
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    // Reset the buffer and array bindings
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0); 
+
+    // NOTE: You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    //          VAOs requires a call to glBindVertexArray anyways, so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 
 
     // uncomment this call to draw in wireframe polygons.
@@ -99,9 +104,9 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        loadedShader.use();
         // draw our first triangle
         //glUseProgram(shaderProgram); replacing this with custom shader renderer
-        loadedShader.use();
         // set uniforms here!
         glm::mat4 model         = glm::mat4(1.0f);
         glm::mat4 view          = glm::mat4(1.0f);
