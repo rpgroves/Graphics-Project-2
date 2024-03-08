@@ -21,10 +21,6 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int vertexAtributeCount = 6; // 3 for position, 3 for color
-
-vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount);
-
 int main()
 {
     // glfw: initialize and configure
@@ -55,15 +51,17 @@ int main()
 
     // Loading shaders from file.
     Shader loadedShader("src/shaders/matrixUniformVertex.shader", "src/shaders/basicFragment.fs");
-    // set up vertex data (and buffer(s)) and configure vertex attributes
+
+    // Set up vertex data
     // ------------------------------------------------------------------
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-    int vertexAttributeCount = 6; // x, y, z, r, g, b
-    unsigned int numVertices = 0;
-    float* vertices = loadVerticesFromFile("src/vertices.txt", vertexAttributeCount);
-
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f, // left  
+         0.5f, -0.5f, 0.0f, // right 
+         0.0f,  0.5f, 0.0f  // top   
+    };
+    
+    // Set up VBO, VAO, VEOs
+    // ------------------------------------------------------------------
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -73,18 +71,8 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-
-    //Vertex Attribute Pointers:
-    //When you add a new field, increment parameter 4 (the size of) in every line that has the pointer, ie when
-    //color got added it went from 3 to 6 because of 3 new floats. Also for each new attribute pointer line increment the
-    //first parameter based on which attirbute number you are working with (color comes second so its index 1), also do this for the enablevertexattribarray line
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexAttributeCount * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // index, size, type, normalized, stride, pointer TODO: IDK WHAT THIS DOES??
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexAttributeCount * sizeof(float), (void*)(3* sizeof(float)));
-    glEnableVertexAttribArray(1);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
@@ -95,7 +83,8 @@ int main()
 
 
     // uncomment this call to draw in wireframe polygons.
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 
     // render loop
     // -----------
@@ -119,7 +108,7 @@ int main()
         glm::mat4 projection    = glm::mat4(1.0f);
 
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -30.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
         loadedShader.setMat4("model", model);
@@ -127,7 +116,7 @@ int main()
         loadedShader.setMat4("projection", projection);
         
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, numVertices);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         // glBindVertexArray(0); // unbind our VA no need to unbind it every time 
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -163,65 +152,4 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-}
-
-vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount) {
-    std::ifstream file("filePath");
-
-    vector<float> objData;
-    vector<int> vertexOrder;
-
-    for (std::string line; getline(file, line);) {
-        // Current line (gets broken into smaller pieces over time)
-        std::string lineTemp = line;
-        // If the current line represents a vertex, read in each vertex position and color, 
-        //      appends x, y, z, r, g, b.
-        if (line != "" && line.at(0) == 'v' && line.at(1) == ' ') {
-            
-            // Read in verticies
-            lineTemp = lineTemp.substr(2);
-            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
-            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
-            objData.push_back(stof(lineTemp.substr(0, lineTemp.find(' '))));
-            lineTemp = lineTemp.substr(lineTemp.find(' ') + 1);
-            objData.push_back(stof(lineTemp.substr(0)));
-
-            // Determine color
-            float color = 0.5f;
-            objData.push_back(color);
-            objData.push_back(color);
-            objData.push_back(color);
-        }
-        // This is wacky
-        if (line != "" && line.at(0) == 'f' && line.at(1) == ' ') {
-            lineTemp = lineTemp.substr(2);
-            std::string numTemp = "";
-            for (long unsigned int i = 0; i < lineTemp.size(); i++) {
-                if (lineTemp.at(i) == '/') {
-                    vertexOrder.push_back(stoi(numTemp));
-                    numTemp = "";
-                    i++;
-                }
-                else if (lineTemp.at(i) != ' ') {
-                    numTemp += lineTemp.at(i);
-                }
-                else {
-                    numTemp = "";
-                }
-            }
-        }
-    }
-    // Loop through vertexOrder and add the verticies to the array
-    vector<float> vertices;
-    vertices.size = (vertexOrder.size() * vertexAtributeCount);
-
-    int verticesIndex = 0;
-    for (long unsigned int i = 0; i < vertexOrder.size(); i++) {
-        int vertexToAdd = vertexOrder.at(i);
-        for (int j = 0; j < vertexAtributeCount; j++) {
-            vertices[verticesIndex] = objData.at((vertexToAdd - 1) * vertexAtributeCount + j);
-            verticesIndex++;
-        }
-    }
-    return vertices;
 }
