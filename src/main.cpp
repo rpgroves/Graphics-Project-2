@@ -59,22 +59,9 @@ int main()
     // Loading shaders from file.
     Shader loadedShader("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
 
-    // Create a mesh
-    std::vector<Vertex> vertices = { // bullshit normals and colors...
-        {glm::vec3(0.5f,  0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
-        {glm::vec3(0.5f, -0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
-        {glm::vec3(-0.5f, -0.5f, 0.0f),    glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
-        {glm::vec3(-0.5f, 0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
-        
-    };
-    std::vector<unsigned int> indices = {
-        0, 1, 3,
-        1, 2, 3
-
-    };
 
 
-    Mesh myMesh(vertices, indices);
+    Mesh myMesh = Mesh::loadObjFile("src/objFiles/cube.obj");
     // ------------------------------------------------------------------
 
 
@@ -95,7 +82,7 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // when the heck did the depth buffer get here? what's with the | operator?
         
-        // Okay I read you call use() on the shader object BEFORE setting uniforms.
+        // Okay I read that you call use() on the shader object BEFORE setting uniforms.
         loadedShader.use();
         
         glm::mat4 model         = glm::mat4(1.0f);

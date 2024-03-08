@@ -17,6 +17,28 @@ void Mesh:: Draw(Shader &shader) {
 }
 
 
+Mesh Mesh::loadObjFile(const char* filename) {
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::ifstream file(filename);
+
+    // Create a mesh
+    vertices = { // bullshit normals and colors...
+        {glm::vec3(0.5f,  0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
+        {glm::vec3(0.5f, -0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
+        {glm::vec3(-0.5f, -0.5f, 0.0f),    glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
+        {glm::vec3(-0.5f, 0.5f, 0.0f),     glm::vec3(0.0f, 0.0f, 1.0f),    glm::vec3(1.0f, 0.0f, 0.0f)},
+        
+    };
+    indices = {
+        0, 1, 3,
+        1, 2, 3
+
+    };
+
+    return Mesh(vertices, indices);
+}
+
 // reads the vertices and indices from the vectors and sets up the VAO, VBO, and EBO
 void Mesh::setupMesh() {
     // Generate all our guys
