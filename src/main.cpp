@@ -48,6 +48,7 @@ int main()
 
     // // glew: load all OpenGL function pointers
     glewInit();
+    // ------------------------------------------------------------------
 
     // Loading shaders from file.
     Shader loadedShader("src/shaders/attributeColorVertex.vs", "src/shaders/basicFragment.fs");
@@ -56,14 +57,16 @@ int main()
     // ------------------------------------------------------------------
        float vertices[] = {
         // positions         // colors
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right     // VERTEX ONE
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left      // VERTEX TWO
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top              // VERTEX THREE
     };
     unsigned int indices[] = {  // note that we start from 0!
-        0, 2, 4,   // first triangle
+        0, 1, 2,   
     };  
-    
+    // WHY are the indices like this!! None of this makes sense.
+
+
     // Set up VBO, VAO, VEOs
     // ------------------------------------------------------------------
     unsigned int VBO, VAO, EBO;
@@ -126,17 +129,18 @@ int main()
         glm::mat4 view          = glm::mat4(1.0f);
         glm::mat4 projection    = glm::mat4(1.0f);
 
-        // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
-        // projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
-        //loadedShader.setMat4("model", model);
-        //loadedShader.setMat4("view", view);
-        //loadedShader.setMat4("projection", projection);
+        loadedShader.setMat4("model", model);
+        loadedShader.setMat4("view", view);
+        loadedShader.setMat4("projection", projection);
         loadedShader.use();
         glBindVertexArray(VAO);
-        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -149,6 +153,7 @@ int main()
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     //glDeleteProgram(shaderProgram); // no need to delete the shader program, it's deleted when the Shader object is destroyed.
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
