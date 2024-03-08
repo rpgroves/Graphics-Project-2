@@ -141,8 +141,8 @@ int main()
 
         // Bind the VAO, draw elements using our indices, and unbind the VAO.
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-        //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         // Each element is a vertex with all the attributes we got, gets passed through 
         //      whatever shaders are bound, etc.
         glBindVertexArray(0);
