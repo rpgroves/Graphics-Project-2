@@ -11,6 +11,7 @@
 #include <vector>
 #include <glm/ext.hpp>
 
+#include "gl_debug_tool.h"
 
 using namespace std;
 
