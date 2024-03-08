@@ -49,26 +49,88 @@ int main()
 
     // // glew: load all OpenGL function pointers
     glewInit();
+    
+    // Configure global OpenGL state
+    glEnable(GL_DEPTH_TEST);
+    
     // ------------------------------------------------------------------
 
     // Loading shaders from file.
-    Shader loadedShader("src/shaders/attributeColorVertex.vs", "src/shaders/basicFragment.fs");
+    Shader loadedShader("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
 
     // Set up vertex data (many attributes, including position and color, in one array)
     // ------------------------------------------------------------------
        float vertices[] = {
-        // positions         // colors
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right     // VERTEX ONE
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left      // VERTEX TWO
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top              // VERTEX THREE
+        /*  
+        // positions            // colors
+         0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,  // bottom right     // VERTEX ONE
+        -0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,  // bottom left      // VERTEX TWO
+         0.0f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f   // top              // VERTEX THREE
+         */
+        // Faces of cubes,      // Colors are arbitrary bc these were UV coordinates before, I just appended 0.0f to the end of each line.
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 0.0f, 1.0f,
+        
+        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+
+        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f
+        
     };
     unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 2,   
+        0, 1, 3,
+        1, 2, 3
     };  
     // WHY are the indices like this!! None of this makes sense.
 
+    glm::vec3 cubePositions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3( 1.3f, -2.0f, -2.5f),
+        glm::vec3( 1.5f,  2.0f, -2.5f),
+        glm::vec3( 1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
 
-    // Set up VBO, VAO, VEOs
+    // Set up VBO, VAO, EBOs
     // ------------------------------------------------------------------
     unsigned int VBO, VAO, EBO;
     glGenBuffers(1, &VBO);
@@ -123,25 +185,37 @@ int main()
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // when the heck did the depth buffer get here? what's with the | operator?
+        // TODO: not sure where to call shader.use().
 
         // set uniforms here!
-        glm::mat4 model         = glm::mat4(1.0f);
+       
         glm::mat4 view          = glm::mat4(1.0f);
         glm::mat4 projection    = glm::mat4(1.0f);
 
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f));
+        //model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -10.0f)); // Camera is 10 feet back (forward..?) from the origin.
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
-        loadedShader.setMat4("model", model);
         loadedShader.setMat4("view", view);
         loadedShader.setMat4("projection", projection);
         loadedShader.use();
+
+        // Render our boxes!
         glBindVertexArray(VAO);
+        for (unsigned int i = 0; i < 10; i++) {
+
+            // Calculate the model matrix for each object, which will be different for each object (translation).
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            loadedShader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            //glDrawElements(GL_TRIANGLES, 1, GL_UNSIGNED_INT, 0);
+        }
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
  
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
