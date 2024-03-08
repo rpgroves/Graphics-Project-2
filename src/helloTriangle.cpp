@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void framebuffer_size_callback(GLFWwindow* window, int width, int& height);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -23,7 +23,7 @@ const unsigned int SCR_HEIGHT = 600;
 
 int vertexAtributeCount = 6; // 3 for position, 3 for color
 
-vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount);
+float* loadVerticesFromFile(std::string filePath, int vertexAttributeCount, int numVertices);
 
 int main()
 {
@@ -62,7 +62,7 @@ int main()
 
     int vertexAttributeCount = 6; // x, y, z, r, g, b
     unsigned int numVertices = 0;
-    float* vertices = loadVerticesFromFile("src/vertices.txt", vertexAttributeCount);
+    float* vertices = loadVerticesFromFile("src/vertices.txt", vertexAttributeCount, numVertices);
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -165,7 +165,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCount) {
+float* loadVerticesFromFile(std::string filePath, int vertexAttributeCount, int& numVertices) {
     std::ifstream file("filePath");
 
     vector<float> objData;
@@ -212,8 +212,7 @@ vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCoun
         }
     }
     // Loop through vertexOrder and add the verticies to the array
-    vector<float> vertices;
-    vertices.size = (vertexOrder.size() * vertexAtributeCount);
+    float vertices[vertexOrder.size() * vertexAttributeCount];
 
     int verticesIndex = 0;
     for (long unsigned int i = 0; i < vertexOrder.size(); i++) {
@@ -223,5 +222,8 @@ vector<float> loadVerticesFromFile(std::string filePath, int vertexAttributeCoun
             verticesIndex++;
         }
     }
-    return vertices;
+
+    float* v = vertices;
+    numVertices = vertexOrder.size();
+    return v;
 }
