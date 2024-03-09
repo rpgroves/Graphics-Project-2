@@ -1,5 +1,4 @@
 #include "mesh.h"
-#include <regex>
 
 void addFaceToIndices(std::vector<unsigned int> face, std::vector<unsigned int> &indices);
 
@@ -12,35 +11,62 @@ Mesh loadObjFile(const char* filename) {
         std::cout << "Could not open file " << filename << std::endl;
         return Mesh(vertices, indices);
     }
-
-    //std::regex pattern("((\d*)\/(\d*)\/(\d*)\s?)*");
-    std::regex pattern("/(\\d+)(?:\\/(\\d+)?\\/(\\d+))?"); // This is the pattern for a single vertex in a face
-    // Group 1 is position, group 2 is texture, group 3 is normal
-
+    std::vector<glm::vec3> positions;
+    // std::vector<glm::vec2> textures;
+    std::vector<glm::vec3> normals;
     for (std::string line; getline(file, line);) { 
         std::string lineTemp = line;  
+
         // Reading vertex (position)
         if(line != "" && line.at(0) == 'v' && line.at(1) == ' ') {
-            Vertex vertex;
+            glm::vec3 position;
             lineTemp = lineTemp.substr(2);
-            sscanf(lineTemp.c_str(), "%f %f %f", &vertex.Position.x, &vertex.Position.y, &vertex.Position.z); // huh
-            vertices.push_back(vertex);
-        
-        } 
+            sscanf(lineTemp.c_str(), "%f %f %f", &position.x, &position.y, &position.z); // huh
+            positions.push_back(position);
+           //std::cout << "Position: " << position.x << " " << position.y << " " << position.z << std::endl;
+        }
+
+        // Reading normals
+        else if(line != "" && line.at(0) == 'v' && line.at(1) == 'n') {
+            glm::vec3 normal;
+            lineTemp = lineTemp.substr(3);
+            sscanf(lineTemp.c_str(), "%f %f %f", &normal.x, &normal.y, &normal.z);
+            normals.push_back(normal);
+        }
 
         // Reading faces (indices)
         else if(line != "" && line.at(0) == 'f' && line.at(1) == ' ') {
-            std::vector<unsigned int> face;
-            lineTemp = lineTemp.substr(2);
-            // Get all matches of the pattern
-            std::smatch match;
-            while (regex_search(lineTemp, match, pattern)) {
-                if (match[0].matched) {
-                    face.push_back(std::stoi(match[1].str()));
-                }
+            std::vector<unsigned int> faceIndices;
+            unsigned int iter = 2; // 'f ' is 2 characters long
+            while (iter < lineTemp.size()) {
+                std::string vertex = lineTemp.substr(iter, lineTemp.find(' ', iter) - iter);
+                // std::cout << "Vertex: " << vertex << std::endl;
+                // We need to account for the varying formats of the faces
+                // 1. 1/1/1 2/2/2 3/3/3
+                // 2. 1//1 2//2 2//2
+                // 3. 1 2 3
+                // But for now, let's just grab the first number and ignore the rest.
+                std::string value = vertex.substr(0, vertex.find('/'));
+                // std::cout << "Value: " << value << std::endl;
+                if (value != "")
+                    faceIndices.push_back(std::stoi(value) - 1); // OBJ indices are 1-based, so we need to subtract 1.
+                iter += vertex.size() + 1;
             }
-            addFaceToIndices(face, indices);
+                // std::cout << "Face index: ";
+                // for (unsigned int i = 0; i < faceIndices.size(); i++) {
+                //     std::cout << faceIndices[i] << " ";
+                // }
+                addFaceToIndices(faceIndices, indices);
         }
+    }
+
+    // Now that we'eve accumulated our data, put them into Vertex structs and add them to the vertices vector.
+    for (unsigned int i = 0; i < positions.size(); i++) {
+        Vertex vertex;
+        vertex.Position = positions.at(i);
+        vertex.Color = glm::vec3(1.0f, 1.0f, 1.0f);
+        vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
+        vertices.push_back(vertex);
     }
     // for (unsigned int i = 0; i < vertices.size(); i++) {
     //     std::cout << "Vertex " << i << std::endl;
