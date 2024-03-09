@@ -33,28 +33,21 @@ Mesh Mesh::loadObjFile(const char* filename) {
             Vertex vertex;
             lineTemp = lineTemp.substr(2);
             sscanf(lineTemp.c_str(), "%f %f %f", &vertex.Position.x, &vertex.Position.y, &vertex.Position.z); // huh
-            vertex.Color = glm::vec3(1.0f, 0.0f, 0.0f);
-            vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
             vertices.push_back(vertex);
+        
         // Reading faces (indices), took this from Riley
         } else if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
         {
             lineTemp = lineTemp.substr(2);
             std::string numTemp = "";
-            for(long unsigned int i = 0; i < lineTemp.size(); i++)
-            {
-                if(lineTemp.at(i) == '/')
-                {
+            for(long unsigned int i = 0; i < lineTemp.size(); i++) {
+                if(lineTemp.at(i) == '/') {
                     indices.push_back(stoi(numTemp));
                     numTemp = "";
                     i++;
                 }
-                else if(lineTemp.at(i) != ' ')
-                {
-                    numTemp += lineTemp.at(i);
-                }
-                else
-                    numTemp = "";
+                else if (lineTemp.at(i) != ' ') numTemp += lineTemp.at(i);
+                else numTemp = "";
             }
         }
 
@@ -66,27 +59,6 @@ Mesh Mesh::loadObjFile(const char* filename) {
     //     std::cout << "\tColor: " << vertices[i].Color.x << " " << vertices[i].Color.y << " " << vertices[i].Color.z << std::endl;
     //     std::cout << "\tNormal: " << vertices[i].Normal.x << " " << vertices[i].Normal.y << " " << vertices[i].Normal.z << std::endl;
     // }
-
-    indices = {
-        4, 3, 2,
-        4, 2, 1,
-
-        1, 2, 6,
-        1, 6, 5,
-
-        7, 6, 2,
-        7, 2, 3,
-
-        4, 8, 7,
-        4, 7, 3,
-
-        5, 8, 4,
-        5, 4, 1,
-
-        5, 6, 7,
-        5, 7, 8,
-
-    };
 
     for (unsigned int i = 0; i < indices.size(); i++) {
         indices[i] -= 1;
