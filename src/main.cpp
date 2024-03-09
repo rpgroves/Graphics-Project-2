@@ -61,7 +61,7 @@ int main()
 
 
 
-    Mesh myMesh = Mesh::loadObjFile("src/objFiles/cube.obj");
+    Mesh myMesh = Mesh::loadObjFile("data/triangulated_cube.obj");
     // ------------------------------------------------------------------
 
 
