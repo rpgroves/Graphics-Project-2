@@ -28,6 +28,7 @@ Mesh Mesh::loadObjFile(const char* filename) {
 
     for (std::string line; getline(file, line);) { 
         std::string lineTemp = line;
+        // Reading vertex (position)
         if(line != "" && line.at(0) == 'v' && line.at(1) == ' ') {
             Vertex vertex;
             lineTemp = lineTemp.substr(2);
@@ -35,23 +36,36 @@ Mesh Mesh::loadObjFile(const char* filename) {
             vertex.Color = glm::vec3(1.0f, 0.0f, 0.0f);
             vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
             vertices.push_back(vertex);
-        } else if(line != "" && line.at(0) == 'f' && line.at(1) == ' ') {
-            unsigned int index1, index2, index3;
+        // Reading faces (indices), took this from Riley
+        } else if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
+        {
             lineTemp = lineTemp.substr(2);
-            sscanf(lineTemp.c_str(), "%d %d %d", &index1, &index2, &index3);
-            indices.push_back(index1 - 1);
-            indices.push_back(index2 - 1);
-            indices.push_back(index3 - 1);
+            std::string numTemp = "";
+            for(long unsigned int i = 0; i < lineTemp.size(); i++)
+            {
+                if(lineTemp.at(i) == '/')
+                {
+                    indices.push_back(stoi(numTemp));
+                    numTemp = "";
+                    i++;
+                }
+                else if(lineTemp.at(i) != ' ')
+                {
+                    numTemp += lineTemp.at(i);
+                }
+                else
+                    numTemp = "";
+            }
         }
 
         
     }
-    for (unsigned int i = 0; i < vertices.size(); i++) {
-        std::cout << "Vertex " << i << std::endl;
-        std::cout << "\tPosition: " << vertices[i].Position.x << " " << vertices[i].Position.y << " " << vertices[i].Position.z << std::endl;
-        std::cout << "\tColor: " << vertices[i].Color.x << " " << vertices[i].Color.y << " " << vertices[i].Color.z << std::endl;
-        std::cout << "\tNormal: " << vertices[i].Normal.x << " " << vertices[i].Normal.y << " " << vertices[i].Normal.z << std::endl;
-    }
+    // for (unsigned int i = 0; i < vertices.size(); i++) {
+    //     std::cout << "Vertex " << i << std::endl;
+    //     std::cout << "\tPosition: " << vertices[i].Position.x << " " << vertices[i].Position.y << " " << vertices[i].Position.z << std::endl;
+    //     std::cout << "\tColor: " << vertices[i].Color.x << " " << vertices[i].Color.y << " " << vertices[i].Color.z << std::endl;
+    //     std::cout << "\tNormal: " << vertices[i].Normal.x << " " << vertices[i].Normal.y << " " << vertices[i].Normal.z << std::endl;
+    // }
 
     indices = {
         4, 3, 2,
