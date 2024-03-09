@@ -14,7 +14,6 @@ class Mesh {
 public:
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    static Mesh loadObjFile(const char* filename);
     //vector<Texture> textures;
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     void Draw(Shader &shader);

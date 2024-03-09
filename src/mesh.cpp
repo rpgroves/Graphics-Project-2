@@ -16,56 +16,6 @@ void Mesh:: Draw(Shader &shader) {
     glBindVertexArray(0);
 }
 
-Mesh Mesh::loadObjFile(const char* filename) {
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
-    std::ifstream file(filename);
-
-    if (!file.is_open()) {
-        std::cout << "Could not open file " << filename << std::endl;
-        return Mesh(vertices, indices);
-    }
-
-    for (std::string line; getline(file, line);) { 
-        std::string lineTemp = line;
-        // Reading vertex (position)
-        if(line != "" && line.at(0) == 'v' && line.at(1) == ' ') {
-            Vertex vertex;
-            lineTemp = lineTemp.substr(2);
-            sscanf(lineTemp.c_str(), "%f %f %f", &vertex.Position.x, &vertex.Position.y, &vertex.Position.z); // huh
-            vertices.push_back(vertex);
-        
-        // Reading faces (indices), took this from Riley
-        } else if(line != "" && line.at(0) == 'f' && line.at(1) == ' ')
-        {
-            lineTemp = lineTemp.substr(2);
-            std::string numTemp = "";
-            for(long unsigned int i = 0; i < lineTemp.size(); i++) {
-                if(lineTemp.at(i) == '/') {
-                    indices.push_back(stoi(numTemp));
-                    numTemp = "";
-                    i++;
-                }
-                else if (lineTemp.at(i) != ' ') numTemp += lineTemp.at(i);
-                else numTemp = "";
-            }
-        }
-
-        
-    }
-    // for (unsigned int i = 0; i < vertices.size(); i++) {
-    //     std::cout << "Vertex " << i << std::endl;
-    //     std::cout << "\tPosition: " << vertices[i].Position.x << " " << vertices[i].Position.y << " " << vertices[i].Position.z << std::endl;
-    //     std::cout << "\tColor: " << vertices[i].Color.x << " " << vertices[i].Color.y << " " << vertices[i].Color.z << std::endl;
-    //     std::cout << "\tNormal: " << vertices[i].Normal.x << " " << vertices[i].Normal.y << " " << vertices[i].Normal.z << std::endl;
-    // }
-
-    for (unsigned int i = 0; i < indices.size(); i++) {
-        indices[i] -= 1;
-    }
-
-    return Mesh(vertices, indices);
-}
 
 // reads the vertices and indices from the vectors and sets up the VAO, VBO, and EBO
 void Mesh::setupMesh() {

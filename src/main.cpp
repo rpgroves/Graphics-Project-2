@@ -13,6 +13,7 @@
 
 #include "gl_debug_tool.h"
 #include "mesh.h"
+#include "objReader.h"
 
 using namespace std;
 
@@ -59,9 +60,8 @@ int main()
     // Loading shaders from file.
     Shader loadedShader("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
 
-
-
-    Mesh myMesh = Mesh::loadObjFile("data/triangulated_cube.obj");
+    // Load mesh from file
+    Mesh myMesh = loadObjFile("data/teapot.obj");
     // ------------------------------------------------------------------
 
 
