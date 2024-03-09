@@ -64,8 +64,9 @@ Mesh loadObjFile(const char* filename) {
     for (unsigned int i = 0; i < positions.size(); i++) {
         Vertex vertex;
         vertex.Position = positions.at(i);
+        if (i < normals.size())
+            vertex.Normal = normals.at(i);
         vertex.Color = glm::vec3(1.0f, 1.0f, 1.0f);
-        vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
         vertices.push_back(vertex);
     }
     // for (unsigned int i = 0; i < vertices.size(); i++) {

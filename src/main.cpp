@@ -61,7 +61,7 @@ int main()
     Shader loadedShader("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
 
     // Load mesh from file
-    Mesh myMesh = loadObjFile("data/triangulated_cube.obj");
+    Mesh myMesh = loadObjFile("data/dragon.obj");
     // ------------------------------------------------------------------
 
 
