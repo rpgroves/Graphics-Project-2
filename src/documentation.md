@@ -3,10 +3,13 @@
 ## 1. Objects
 
 ### .obj Files
+Our VBO and VAO data are determined be reading data from a .obj file. .obj files have the following properties that we utilize: vertices and faces. Vertices are read using lines that start with "v " and faces from lines that start with "f ". Vertex data gives us each vertex in order and their positions, and faces tell us which vertices are part of each face. We use this data to create a separate triangles data structure.
 
 ### Separate Triangles Data Structure
+This data structure is created by treating the vertices of each face as separate from the vertices of any other face. Essentially this means that is a vertex is part of more than one face, then its data is stored more than once, once for each face. We use the face data to determine which vertices that we found must have their data used by this face (ie. vertices 1, 2, and 4). The vertices are put into the VBO in this order.
 
 ### VBO and VAO
+The VBO and VAO help us build up the vertex data in a simple container. Our VBO contains 3 floats for location, then 3 floats for color for each vertex, and contains every used vertex in order of how they appear on faces. For instance if face 1 had vertices 1, 2, 4 and face 2 had vertices 1, 3, 4, then the VBO would contain vertices in the following order 1, 2, 4, 1, 3, 4. Notice that vertices 1 and 4 are duplicated as they appear in multiple faces, this is because of our separate triangles data structure.
 
 ## 2. Shaders
 
