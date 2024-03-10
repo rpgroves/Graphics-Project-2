@@ -3,17 +3,17 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include "shader_s.h"
+#include <glm/ext.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <glm/ext.hpp>
 
 #include "gl_debug_tool.h"
 #include "mesh.h"
 #include "objReader.h"
+#include "shader_s.h"
 
 using namespace std;
 
@@ -85,12 +85,16 @@ int main()
         // Okay I read that you call use() on the shader object BEFORE setting uniforms.
         loadedShader.use();
         
+        // TODO: create one Model Viewmatrix, then EITHER:
+        //      Pass it to the shader as a uniform, where it will be applied on the GPU.
+        //      OR
+        //      Apply to the vertices before sending them to the shader.
         glm::mat4 model         = glm::mat4(1.0f);
         glm::mat4 view          = glm::mat4(1.0f);
         glm::mat4 projection    = glm::mat4(1.0f);
 
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f)); // Camera is 5 units back (forward..?) from the origin.
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f)); // Camera is 5 units back (forward..?) from the origin.
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
         loadedShader.setMat4("view", view);

@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/glm/**",
-                "${workspaceFolder}/stb_img/**"
+                "/usr/include/GL"
             ],
             "defines": [],
             "cStandard": "c17",
