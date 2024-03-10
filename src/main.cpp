@@ -14,11 +14,14 @@
 #include "mesh.h"
 #include "objReader.h"
 #include "shader_s.h"
+#include "transformations.h"
 
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix);
+void CPU_applyMVM(ModelViewMatrix &modelViewMatrix, Mesh &mesh, Shader &shader);
+void GPU_applyMVM(ModelViewMatrix &modelViewMatrix, Mesh &mesh, Shader &shader);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -58,15 +61,18 @@ int main()
     // ------------------------------------------------------------------
 
     // Loading shaders from file.
-    Shader loadedShader("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
+    Shader gpu_Transforms("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
+    Shader cpu_Transforms("src/shaders/basicVertex.vs", "src/shaders/basicFragment.fs");
 
     // Load mesh from file
-    Mesh myMesh = loadObjFile("data/dragon.obj");
+    Mesh myMesh = loadObjFile("data/venus.obj");
     // ------------------------------------------------------------------
 
 
     // uncomment this call to draw in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    ModelViewMatrix modelViewMatrix;
 
 
     // render loop
@@ -75,7 +81,7 @@ int main()
     {
         // input
         // -----
-        processInput(window);
+        processInput(window, modelViewMatrix);
 
         // render
         // ------
@@ -83,27 +89,26 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // when the heck did the depth buffer get here? what's with the | operator?
         
         // Okay I read that you call use() on the shader object BEFORE setting uniforms.
-        loadedShader.use();
+
         
         // TODO: create one Model Viewmatrix, then EITHER:
         //      Pass it to the shader as a uniform, where it will be applied on the GPU.
+        Shader& chosenShader = gpu_Transforms; 
+        if (true) {
+            chosenShader.use();
+            chosenShader.setMat4("model", modelViewMatrix.modelMatrix);
+            chosenShader.setMat4("view", modelViewMatrix.viewMatrix);
+        }
         //      OR
+        else {
         //      Apply to the vertices before sending them to the shader.
-        glm::mat4 model         = glm::mat4(1.0f);
-        glm::mat4 view          = glm::mat4(1.0f);
-        glm::mat4 projection    = glm::mat4(1.0f);
-
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f)); // Camera is 5 units back (forward..?) from the origin.
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+            chosenShader = cpu_Transforms;
+            chosenShader.use();
+            modelViewMatrix.applyToMesh(myMesh);
+        }
+        chosenShader.setMat4("projection", projectionMatrix);
+        myMesh.Draw(chosenShader);
         
-        loadedShader.setMat4("view", view);
-        loadedShader.setMat4("projection", projection);
-        loadedShader.setMat4("model", model);
-
-
-        myMesh.Draw(loadedShader);
-
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -121,10 +126,37 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    // Scaling
+    if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+        modelViewMatrix.scale(1.1f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS) {
+        modelViewMatrix.scale(0.9f);
+    }
+
+    // Rotation
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        modelViewMatrix.rotate(1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        modelViewMatrix.rotate(-1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        modelViewMatrix.rotate(1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        modelViewMatrix.rotate(-1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
