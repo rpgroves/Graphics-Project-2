@@ -20,12 +20,10 @@ using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix);
-void CPU_applyMVM(ModelViewMatrix &modelViewMatrix, Mesh &mesh, Shader &shader);
-void GPU_applyMVM(ModelViewMatrix &modelViewMatrix, Mesh &mesh, Shader &shader);
-
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+bool transformOnCPU = false;
 
 int main()
 {
@@ -73,7 +71,7 @@ int main()
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     ModelViewMatrix modelViewMatrix;
-
+    bool transformOnCPU = false;
 
     // render loop
     // -----------
@@ -98,16 +96,17 @@ int main()
             chosenShader.use();
             chosenShader.setMat4("model", modelViewMatrix.modelMatrix);
             chosenShader.setMat4("view", modelViewMatrix.viewMatrix);
+            chosenShader.setMat4("projection", projectionMatrix);
+            myMesh.draw(chosenShader);
         }
         //      OR
         else {
-        //      Apply to the vertices before sending them to the shader.
+    //      Apply to the vertices before sending them to the shader.
             chosenShader = cpu_Transforms;
             chosenShader.use();
-            modelViewMatrix.applyToMesh(myMesh);
+            chosenShader.setMat4("projection", projectionMatrix);
+            myMesh.draw_with_CPU_transform(chosenShader, modelViewMatrix);
         }
-        chosenShader.setMat4("projection", projectionMatrix);
-        myMesh.Draw(chosenShader);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -155,6 +154,10 @@ void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix)
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         modelViewMatrix.rotate(-1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
     }
+
+    // if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
+    //     transformOnCPU = !transformOnCPU;
+    // }
 
 
 }

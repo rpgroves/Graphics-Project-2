@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include "transformations.h"
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
     this->vertices = vertices;
@@ -6,13 +7,31 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
     setupMesh();
 }
 
-void Mesh:: Draw(Shader &shader) {
+void Mesh::draw(Shader &shader) {
     // Bind the VAO, draw elements using our indices, and unbind the VAO.
     glBindVertexArray(VAO);
     //glDrawArrays(GL_TRIANGLES, 0, vertices.size());
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     // Each element is a vertex with all the attributes we got, gets passed through 
     //      whatever shaders are bound, etc.
+    glBindVertexArray(0);
+}
+
+void Mesh::draw_with_CPU_transform(Shader &shader, ModelViewMatrix &modelViewMatrix) {
+    
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    std::vector<Vertex> transformedVertices;;
+    // apply transformation to every vertex in the mesh
+    for (unsigned int i = 0; i < vertices.size(); i++) {
+        transformedVertices.push_back(vertices[i]);
+        transformedVertices[i].Position = glm::vec3(modelViewMatrix.totalMatrix * glm::vec4(vertices[i].Position, 1.0f));
+        transformedVertices[i].Normal = glm::vec3(modelViewMatrix.totalMatrix * glm::vec4(vertices[i].Normal, 0.0f));
+    }
+    // Write the vertices to the VBO
+    glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(Vertex), &transformedVertices[0], GL_STATIC_DRAW);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
