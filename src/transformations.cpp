@@ -26,10 +26,10 @@ void ModelViewMatrix::applyToMesh(Mesh &mesh) {
 
 void ModelViewMatrix::scale(float multiplier) {
     modelMatrix = glm::scale(modelMatrix, glm::vec3(multiplier, multiplier, multiplier));
-    // totalMatrix = viewMatrix * modelMatrix;
+    totalMatrix = viewMatrix * modelMatrix;
 }
 
 void ModelViewMatrix::rotate(float angle, glm::vec3 axis) {
     modelMatrix = glm::rotate(modelMatrix, glm::radians(angle), axis);
-    // totalMatrix = viewMatrix * modelMatrix;
+    totalMatrix = viewMatrix * modelMatrix;
 }
