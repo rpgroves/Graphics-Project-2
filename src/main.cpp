@@ -90,9 +90,9 @@ int main()
 
         
         // TODO: create one Model Viewmatrix, then EITHER:
-        //      Pass it to the shader as a uniform, where it will be applied on the GPU.
         Shader& chosenShader = gpu_Transforms; 
-        if (true) {
+        //      Pass it to the shader as a uniform, where it will be applied on the GPU.
+        if (!transformOnCPU) {
             chosenShader.use();
             chosenShader.setMat4("model", modelViewMatrix.modelMatrix);
             chosenShader.setMat4("view", modelViewMatrix.viewMatrix);

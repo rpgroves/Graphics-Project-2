@@ -17,6 +17,7 @@ void Mesh::draw(Shader &shader) {
     glBindVertexArray(0);
 }
 
+
 void Mesh::draw_with_CPU_transform(Shader &shader, ModelViewMatrix &modelViewMatrix) {
     
     glBindVertexArray(VAO);
