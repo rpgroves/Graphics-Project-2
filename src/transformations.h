@@ -14,4 +14,5 @@ public:
 
         void rotate(float angle, glm::vec3 axis);
         void scale(float multiplier);
+        void translate(glm::vec3 translation);
 };

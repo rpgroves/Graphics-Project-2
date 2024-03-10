@@ -23,7 +23,7 @@ void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-bool transformOnCPU = false;
+const bool transformOnCPU = false;
 
 int main()
 {
@@ -60,7 +60,7 @@ int main()
 
     // Loading shaders from file.
     Shader gpu_Transforms("src/shaders/matrixUniformVertex.vs", "src/shaders/basicFragment.fs");
-    Shader cpu_Transforms("src/shaders/basicVertex.vs", "src/shaders/basicFragment.fs");
+    Shader cpu_Transforms("src/shaders/matrixUniformCPU.vs", "src/shaders/basicFragment.fs");
 
     // Load mesh from file
     Mesh myMesh = loadObjFile("data/venus.obj");
@@ -71,7 +71,6 @@ int main()
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     ModelViewMatrix modelViewMatrix;
-    bool transformOnCPU = false;
 
     // render loop
     // -----------
@@ -93,6 +92,7 @@ int main()
         Shader& chosenShader = gpu_Transforms; 
         //      Pass it to the shader as a uniform, where it will be applied on the GPU.
         if (!transformOnCPU) {
+            chosenShader = gpu_Transforms;
             chosenShader.use();
             chosenShader.setMat4("model", modelViewMatrix.modelMatrix);
             chosenShader.setMat4("view", modelViewMatrix.viewMatrix);
@@ -149,16 +149,40 @@ void processInput(GLFWwindow *window, ModelViewMatrix &modelViewMatrix)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         modelViewMatrix.rotate(1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+        std::cout << "transformOnCPU: " << transformOnCPU << std::endl;
+
     }
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         modelViewMatrix.rotate(-1.0f, glm::vec3(1.0f, 0.0f, 0.0f));
     }
 
-    // if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
-    //     transformOnCPU = !transformOnCPU;
+
+    // Translation
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        modelViewMatrix.translate(glm::vec3(0.0f, 0.0f, 0.1f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        modelViewMatrix.translate(glm::vec3(0.0f, 0.0f, -0.1f));
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        modelViewMatrix.translate(glm::vec3(-0.1f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        modelViewMatrix.translate(glm::vec3(0.1f, 0.0f, 0.0f));
+    }
+
+    // // CPU vs GPU rendering
+    // if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+    //     transformOnCPU = false;
+    //     std::cout << "GPU Transformation mode\n";
     // }
 
+    // if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+    //     transformOnCPU = true;
+    //     std::cout << "CPU Transformation mode\n";
+    // }
 
 }
 

@@ -28,7 +28,9 @@ void Mesh::draw_with_CPU_transform(Shader &shader, ModelViewMatrix &modelViewMat
     for (unsigned int i = 0; i < vertices.size(); i++) {
         transformedVertices.push_back(vertices[i]);
         transformedVertices[i].Position = glm::vec3(modelViewMatrix.totalMatrix * glm::vec4(vertices[i].Position, 1.0f));
-        transformedVertices[i].Normal = glm::vec3(modelViewMatrix.totalMatrix * glm::vec4(vertices[i].Normal, 0.0f));
+        transformedVertices[i].Normal = glm::normalize(glm::vec3(
+                modelViewMatrix.totalMatrix * glm::vec4(vertices[i].Normal, 0.0f)));
+
     }
     // Write the vertices to the VBO
     glBufferData(GL_ARRAY_BUFFER, transformedVertices.size() * sizeof(Vertex), &transformedVertices[0], GL_STATIC_DRAW);
