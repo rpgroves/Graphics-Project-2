@@ -88,7 +88,7 @@ void addFaceToIndices(std::vector<unsigned int> face, std::vector<unsigned int> 
         indices.push_back(face[1]);
         indices.push_back(face[2]);
     }
-
+    // If the face has 4 vertices, it's easy to split into two triangles.
     else if (face.size() == 4) {
         indices.push_back(face[0]);
         indices.push_back(face[1]);
@@ -96,7 +96,7 @@ void addFaceToIndices(std::vector<unsigned int> face, std::vector<unsigned int> 
         indices.push_back(face[0]);
         indices.push_back(face[2]);
         indices.push_back(face[3]);
-    }
-
+    }   
+    // Oops! You lose.
     else std::cout << "Face has " << face.size() << " vertices, not supported." << std::endl;
 }
